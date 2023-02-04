@@ -31,6 +31,7 @@ end
 
 val update
   :  unit
+  -> directory:Filename.t
   -> max_retries:int
   -> f:(unit -> ('commit, 'abort) Commit_or_abort.t Deferred.t)
   -> (('commit, 'abort) Completion_status.t, Error.t * Stashed_changes.t) Result.t
