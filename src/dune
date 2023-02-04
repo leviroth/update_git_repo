@@ -1,0 +1,6 @@
+(library
+ (name update_git_repo)
+ (libraries async core)
+ (inline_tests)
+ (preprocess
+  (pps ppx_jane)))
