@@ -90,6 +90,9 @@ end
 
 (* TODO: specify remote, branch *)
 let update () ~max_retries ~f =
+  (match Int.is_negative max_retries with
+  | false -> ()
+  | true -> raise_s [%message "[max_retries] cannot be negative" (max_retries : int)]);
   let%bind () = fetch_and_reset () in
   Deferred.repeat_until_finished max_retries (fun max_retries ->
       match%bind f () with
@@ -106,6 +109,9 @@ let update () ~max_retries ~f =
           return (`Finished (Ok (Completion_status.Committed { message; hash; data })))
         | Error error ->
           (match max_retries > 0 with
+          | true ->
+            let%bind () = fetch_and_reset () in
+            return (`Repeat (max_retries - 1))
           | false ->
             let%bind failure_stash_hash =
               stash_if_necessary ~message:"Changes present when update failed"
@@ -114,8 +120,5 @@ let update () ~max_retries ~f =
               (`Finished
                 (Error
                    ( Error.tag error ~tag:"Failed; last error is attached."
-                   , failure_stash_hash )))
-          | true ->
-            let%bind () = fetch_and_reset () in
-            return (`Repeat (max_retries - 1)))))
+                   , failure_stash_hash ))))))
 ;;
