@@ -5,6 +5,7 @@ module Stashed_changes : sig
   type t =
     | Stashed_hash of string
     | Nothing_stashed
+  [@@deriving sexp]
 end
 
 module Commit_or_abort : sig

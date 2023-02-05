@@ -68,6 +68,7 @@ module Stashed_changes = struct
   type t =
     | Stashed_hash of string
     | Nothing_stashed
+  [@@deriving sexp]
 end
 
 let stash_if_necessary ~message ~working_dir =
